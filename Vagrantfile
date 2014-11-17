@@ -11,6 +11,9 @@ base_boxes = {
     :image_name => /CentOS 6\.5/,
     :default => true,
     :pty => true,
+    :synced_folder => '.',
+    :memory => 3560,
+    :cpus => 2,
     :virtualbox => 'http://developer.nrel.gov/downloads/vagrant-boxes/CentOS-6.4-x86_64-v20130731.box',
     :libvirt => 'http://m0dlx.com/files/foreman/boxes/centos64.box'
   },
@@ -19,6 +22,9 @@ base_boxes = {
     :image_name => /CentOS 7/,
     :default => true,
     :pty => true,
+    :synced_folder => '.',
+    :memory => 3560,
+    :cpus => 2,
     :libvirt => 'https://download.gluster.org/pub/gluster/purpleidea/vagrant/centos-7.0/centos-7.0.box'
   },
 }
@@ -36,12 +42,22 @@ boxes = [
 
 custom_boxes = File.exists?('boxes.yaml') ? YAML::load(File.open('boxes.yaml')) : {}
 
+Dir.glob("plugins/**/boxes.yaml").each do |plugin|
+  plugin_boxes = YAML::load(File.open(plugin))
+  plugin_boxes.each { |name, box| box['synced_folder'] = File.dirname(plugin) }
+  custom_boxes = custom_boxes.merge(plugin_boxes)
+end
+
 custom_boxes.each do |name, args|
   if (box = boxes.find { |box| box[:name] == args['box'] })
     definition = box.merge(:name => name)
 
     definition[:shell] += " #{args['options']} " if args['options']
     definition[:shell] += " --installer-options='#{args['installer']}' " if args['installer']
+    definition[:shell] = args['shell'] if args['shell']
+    definition[:synced_folder] = args['synced_folder'] if args['synced_folder']
+    definition[:memory] = args['memory'] if args['memory']
+    definition[:cpus] = args['cpus'] if args['cpus']
 
     boxes << definition
   else
@@ -66,44 +82,41 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         shell.inline = box[:shell]
       end
 
-      machine.vm.provider :libvirt do |p, override|
+      config.vm.provider :libvirt do |provider, override|
         override.vm.box_url = box[:libvirt]
-        override.vm.synced_folder ".", "/vagrant", type: "rsync"
+        override.vm.synced_folder box[:synced_folder], "/vagrant", type: "rsync"
+
+        provider.memory = box[:memory]
+        provider.cpus = box[:cpus]
       end
 
-      machine.vm.provider :virtualbox do |p, override|
+      machine.vm.provider :rackspace do |provider, override|
+        provider.vm.box = 'dummy'
+        provider.server_name = machine.vm.hostname
+        provider.flavor = /4GB/
+        provider.image = box[:image_name]
+        provider.ssh.pty = true if box[:pty]
+      end
+
+      config.vm.provider :virtualbox do |provider, override|
         override.vm.box_url = box[:virtualbox]
 
+        provider.memory = box[:memory]
+        provider.cpus = box[:cpus]
+
+        provider.customize ["modifyvm", :id, "--natdnsproxy1", "off"]
+        provider.customize ["modifyvm", :id, "--natdnshostresolver1", "off"]
+
         if box[:name].include?('devel')
-          config.vm.network :forwarded_port, guest: 3000, host: 3330
-          config.vm.network :forwarded_port, guest: 443, host: 4430
+          override.vm.network :forwarded_port, guest: 3000, host: 3330
+          override.vm.network :forwarded_port, guest: 443, host: 4430
         else
           override.vm.network :forwarded_port, guest: 80, host: 8080
           override.vm.network :forwarded_port, guest: 443, host: 4433
         end
       end
 
-      machine.vm.provider :rackspace do |p, override|
-        override.vm.box = 'dummy'
-        p.server_name = machine.vm.hostname
-        p.flavor = /4GB/
-        p.image = box[:image_name]
-        override.ssh.pty = true if box[:pty]
-      end
-
     end
-  end
-
-  config.vm.provider :libvirt do |domain|
-    domain.memory = 3560
-    domain.cpus = 2
-  end
-
-  config.vm.provider :virtualbox do |domain|
-    domain.memory = 3560
-    domain.cpus = 2
-    domain.customize ["modifyvm", :id, "--natdnsproxy1", "off"]
-    domain.customize ["modifyvm", :id, "--natdnshostresolver1", "off"]
   end
 
 end
