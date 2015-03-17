@@ -43,6 +43,7 @@ class RepoMaker
            "name=Local repository for #{@name}\n" \
            "baseurl=file://#{File.expand_path(@directory)}\n" \
            "enabled=1\n" \
+           "priority=1\n" \
            "gpgcheck=0\n" \
            "protect=1"
 
