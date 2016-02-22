@@ -1,0 +1,59 @@
+{
+    "domains": {
+        "foreman.example.com": {
+            "nics": [
+                {
+                    "net": "testenv"
+                }, 
+                {
+                    "net": "sat"
+                }
+            ], 
+            "disks": [
+                {
+                    "template_name": "centos7_host", 
+                    "type": "template", 
+                    "name": "root", 
+                    "dev": "vda", 
+                    "format": "qcow2",
+                    "size": "100G"
+                }
+            ], 
+            "memory": 4096
+        }, 
+        "capsule.example.com": {
+            "nics": [
+                {
+                    "net": "testenv"
+                }, 
+                {
+                    "net": "sat"
+                }
+            ], 
+            "disks": [
+                {
+                    "template_name": "centos7_host", 
+                    "type": "template", 
+                    "name": "root", 
+                    "dev": "vda", 
+                    "format": "qcow2"
+                }
+            ], 
+            "memory": 2056
+        }
+    }, 
+    "nets": {
+        "testenv": {
+            "dhcp": {
+                "start": 100, 
+                "end": 254
+            }, 
+            "management": true, 
+            "type": "nat"
+        }, 
+        "sat": {
+            "management": false, 
+            "type": "bridge"
+        }
+    }
+}

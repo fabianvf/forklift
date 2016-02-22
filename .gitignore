@@ -12,3 +12,4 @@ plugins
 scripts
 repo
 Gemfile.lock
+lago/environment*
