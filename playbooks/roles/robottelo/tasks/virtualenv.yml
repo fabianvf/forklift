@@ -1,0 +1,28 @@
+---
+- name: Install yum packages
+  yum: pkg={{ item }} state=present
+  with_items:
+    - python-devel
+    - libffi-devel
+    - openssl-devel
+    - gcc
+
+- name: Install pip
+  easy_install: name=pip
+
+- name: Install virtualenv
+  command: pip install virtualenv
+
+- name: Create folder for virtualenv
+  file: state=directory owner=root group=root path={{ virtualenv_path }}
+
+- name: Check whether virtualenv exists
+  stat: path="{{ virtualenv_path }}/bin/activate"
+  register: virtualenv_activate
+
+- name: Create the virtualenv
+  command: virtualenv {{ virtualenv_path }} --distribute --no-site-packages
+  when: virtualenv_activate.stat.exists != true
+
+- name: Install requirements
+  pip: requirements=requirements.txt virtualenv={{ virtualenv_path }} chdir=/root/robottelo

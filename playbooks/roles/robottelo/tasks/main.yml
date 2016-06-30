@@ -1,0 +1,26 @@
+---
+- name: Clone robottelo
+  git: repo=https://github.com/SatelliteQE/robottelo.git dest=/root/robottelo update=yes force=yes
+
+- include: virtualenv.yml
+
+- name: Robottelo properties file
+  shell: cp robottelo.properties.sample robottelo.properties chdir=/root/robottelo
+
+- name: 'Get password'
+  shell: grep ' admin_password' /etc/foreman-installer/scenarios.d/katello-answers.yaml | cut -d ':' -f 2 | xargs
+  register: admin_password
+
+- name: Set robottelo hostname
+  lineinfile: dest=/root/robottelo/robottelo.properties regexp="^hostname=" line="hostname={{ ansible_fqdn }}" state=present backrefs=yes
+
+- name: Set admin password
+  lineinfile: dest=/root/robottelo/robottelo.properties regexp="^# admin_password=" line="admin_password={{ admin_password.stdout }}" state=present backrefs=yes
+
+- name: Set logging
+  replace: dest=/root/robottelo/logging.conf regexp="level=DEBUG" replace="level=INFO"
+
+- name: Run tests
+  shell: "{{ virtualenv_path }}/bin/py.test --junit-xml=results.xml tests/foreman/endtoend/test_api_endtoend.py"
+  args:
+    chdir: /root/robottelo
