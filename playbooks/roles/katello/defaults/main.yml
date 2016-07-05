@@ -7,3 +7,5 @@ katello_use_koji_repos: False
 katello_password: changeme
 katello_installer_command: foreman-installer -v --scenario katello --foreman-admin-password "{{ katello_password }}"
 katello_skip_installer: False
+katello_pulp_url: "https://{{ ansible_fqdn }}"
+katello_sync_token: "katello"

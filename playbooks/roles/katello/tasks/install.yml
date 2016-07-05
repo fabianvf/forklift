@@ -16,6 +16,13 @@
     name: katello
     state: latest
 
-- name: 'Run installer'
-  command: "{{ katello_installer_command }}"
-  when: not katello_skip_installer
+- name: 'Katello settings'
+  template:
+    src: 'katello.yaml.j2'
+    dest: '/etc/foreman/plugins/katello.yaml'
+    owner: foreman
+    group: foreman
+
+#- name: 'Run installer'
+#  command: "{{ katello_installer_command }}"
+#  when: not katello_skip_installer

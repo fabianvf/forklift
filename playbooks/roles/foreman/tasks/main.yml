@@ -11,10 +11,32 @@
     update_cache: yes
     state: latest
 
-- name: 'Install foreman-installer'
+- name: 'Install foreman'
   yum:
-    name: foreman-installer
+    name: foreman
     state: latest
 
-- name: 'Run installer'
-  command: "{{ foreman_installer_command }}"
+- name: 'Install foreman-postgresql'
+  yum:
+    name: foreman-postgresql
+    state: latest
+
+- name: 'Databse configuration'
+  template:
+    src: database.yml.j2
+    dest: /etc/foreman/database.yml
+    owner: foreman
+    group: foreman
+
+- name: 'Settings file'
+  template:
+    src: settings.yml.j2
+    dest: /etc/foreman/settings.yaml
+    owner: foreman
+    group: foreman
+
+- name: 'Migrate database'
+  command: foreman-rake db:migrate
+
+- name: 'Seed database'
+  command: foreman-rake db:seed

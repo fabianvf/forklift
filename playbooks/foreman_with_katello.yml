@@ -1,0 +1,60 @@
+---
+- hosts: localhost
+  tasks:
+    - name: 'Bring up box for Foreman'
+      command: vagrant up foreman
+
+    - name: 'Bring up box for Pulp'
+      command: vagrant up pulp
+
+    - name: 'Bring up box for Candlepin'
+      command: vagrant up candlepin
+
+    - name: 'Refresh inventory'
+      meta: refresh_inventory
+
+- hosts: foreman
+  become: true
+  vars:
+    pulp_hostname: pulp.example.com
+  roles:
+    - foreman_ca
+    - foreman_certs
+    - pulp_certs
+    - pulp_client_certs
+
+#- hosts: candlepin
+#  roles:
+#    - candlepin_postgresql
+#    - candlepin
+#
+- hosts: pulp
+  become: true
+  vars:
+    pulp_yumrepo_url: https://fedorapeople.org/groups/katello/releases/yum/nightly/pulp/el7/x86_64
+    pulp_install_server: true
+    pulp_run_celerybeat: true
+    pulp_run_resource_manager: true
+    pulp_server_pkgs:
+      - pulp-server
+      - pulp-selinux
+      - python-gofer-qpid
+      - qpid-tools
+    qpid_cpp_Server_epel_install: yes
+  roles:
+    - qpid_cpp_server
+    - mongodb
+    - pulp_apache
+    - pulp
+
+- hosts: foreman
+  become: true
+  vars:
+    katello_pulp_url: "https://pulp.example.com"
+  roles:
+    - foreman_postgresql 
+    - foreman_repositories
+    - katello_repositories
+    - katello
+    - foreman
+    - foreman_apache

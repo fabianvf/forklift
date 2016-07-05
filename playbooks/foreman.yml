@@ -1,0 +1,8 @@
+---
+- hosts: server
+  roles:
+    - foreman_ca
+    - foreman_certs
+    - foreman_apache
+    - foreman_postgresql 
+    - foreman

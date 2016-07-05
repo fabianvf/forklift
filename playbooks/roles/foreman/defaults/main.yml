@@ -1,2 +1,3 @@
 ---
 foreman_installer_command: foreman-installer -v --scenario foreman
+foreman_database_name: foreman

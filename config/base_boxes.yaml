@@ -38,6 +38,12 @@ boxes:
     <<: *install_shell
     options: --scenario=foreman
 
+  centos7-foreman-ansible:
+    box: centos7
+    ansible:
+      playbook: 'playbooks/foreman_with_katello.yml'
+      group: 'server'
+
   centos6-katello-nightly:
     box: centos6
     <<: *install_shell
