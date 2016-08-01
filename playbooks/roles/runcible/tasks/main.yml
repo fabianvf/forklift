@@ -1,0 +1,108 @@
+---
+- name: 'Install dependencies'
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - ruby-devel
+    - rubygem-bundler
+    - libxml2-devel
+    - ruby
+    - rake
+    - gcc
+    - wget
+    - git
+    - nss
+    - glib2
+    - http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
+    - http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    - puppet
+    - https://fedorapeople.org/groups/katello/releases/yum/nightly/katello/el7/x86_64/katello-repos-latest.rpm
+
+- name: 'Install Pulp repo'
+  command: wget https://repos.fedorapeople.org/repos/pulp/pulp/rhel-pulp.repo
+  args:
+    chdir: '/etc/yum.repos.d'
+
+- name: 'Setup OSTree Repo'
+  yum_repository:
+    name: atomic7-testing
+    description: "Candlepin {{ katello_version }} Koji Repository"
+    baseurl: "http://cbs.centos.org/repos/atomic7-testing/x86_64/os/"
+    enabled: 1
+    gpgcheck: 0
+
+- name: 'Install ostree'
+  yum:
+    name: 'ostree'
+
+- name: 'Install RVM GPG key'
+  command: gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+
+- name: 'Install RVM'
+  shell: \curl -sSL https://get.rvm.io | bash -s stable --ruby
+
+- name: 'Install librarian-puppet gem'
+  gem:
+    name: "librarian-puppet"
+
+- name: 'Clone puppet-pulp'
+  git:
+    src: https://github.com/katello/puppet-pulp.git
+    dest: '/home/vagrant'
+
+- name: 'Lay down Puppetfile'
+  command: >
+    cat > Puppetfile <<EOL
+    forge "https://forgeapi.puppetlabs.com"
+
+    metadata
+    EOL
+  args:
+    chdir: '/home/vagrant/puppet-pulp'
+
+- name: 'Install puppet-pulp dependencies'
+  command: librarian-puppet install
+
+- name: 'Link puppet-pulp source'
+
+- name: 'Create test.pp with options'
+  command: >
+      cat > test.pp <<EOL
+    class { pulp:
+      enable_rpm => true,
+      enable_docker => true,
+      enable_puppet => true,
+      enable_python => true,
+      enable_ostree => true
+    }
+    EOL
+
+- name: 'Apply puppet-pulp'
+  become: true
+  command: puppet apply --modulepath=puppet-pulp/modules test.pp
+  args:
+    chdir: '/home/vagrant'
+
+- name: 'Make Pulp config readable'
+  file: '/etc/pulp/server.conf'
+    mode: 644
+
+- name: 'Clone runcible'
+  git:
+    src: https://github.com/katello/runcible.git
+    dest: '/home/vagrant'
+
+- name: ''
+  gem:
+    name: 'bundler'
+
+- name: ''
+  command: source "$HOME/.rvm/scripts/rvm"
+
+- name: 'Bundle install'
+  command: bundle install
+  args:
+    chdir: 'runcible'
+
+- name: 'Run tests'
+  command: rake test mode=all
