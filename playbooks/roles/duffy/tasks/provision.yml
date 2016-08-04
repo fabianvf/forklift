@@ -1,0 +1,12 @@
+---
+- name: 'Provision nodes'
+  cico:
+    action: 'get'
+    api_key: "{{ api_key }}"
+    release: "7"
+    count: "1"
+  register: cico_data
+
+- name: 'Write host data locally'
+  command: "echo '{{ cico_data }}' > ./cico_data.json"
+  delegate_to: localhost

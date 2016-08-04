@@ -1,0 +1,17 @@
+---
+- hosts: localhost
+  gather_facts: False
+  tasks:
+    - name: "provision nodes"
+      duffy_ansible:
+        state: "present"
+        count: 1
+      register: host_data
+
+    - debug:
+        var: host_data
+
+    - name: "Write host data to file"
+      copy:
+        content: "{{ host_data }}"
+        dest: "./host_data.json"

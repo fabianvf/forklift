@@ -1,0 +1,29 @@
+---
+- name: Add requested nodes to hosts file
+  add_host:
+    name: "{{ item.value.hostname }}"
+    groups: "nodes"
+    ansible_fqdn: "{{ item.value.hostname }}"
+    ansible_ssh_user: "root"
+    ansible_ssh_private_key_file: "{{ private_key }}"
+    ansible_ssh_host: "{{ item.value.ip_address }}"
+  with_items: "{{ cico_data.results.hosts }}"
+
+- name: Setup custom facts directory
+  file:
+    state: "directory"
+    recurse: "yes"
+    path: "/etc/ansible/facts.d"
+  delegate_to: "{{ item }}"
+  with_items: "{{ groups['nodes'] }}"
+
+- name: Install ci custom facts for provisioning traceability
+  template:
+    src: "templates/ci.fact.j2"
+    dest: "/etc/ansible/facts.d/ci.fact"
+  delegate_to: "{{ item }}"
+  with_items: "{{ groups['nodes'] }}"
+
+- name: Refresh facts
+  setup:
+    filter: "ansible_local"

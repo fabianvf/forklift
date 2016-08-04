@@ -1,0 +1,27 @@
+---   
+- hosts: localhost
+  gather_facts: False
+  tasks:
+    - name: Install vagrant
+      become: true
+      yum:
+        name: vagrant
+      remote_user: root
+      delegate_to: "{{ item }}"
+      with_items: "{{ groups['foreman_nodes'] }}"
+    
+    - name: Install ansible
+      become: true
+      yum:
+        name: ansible
+      remote_user: root
+      delegate_to: "{{ item }}"
+      with_items: "{{ groups['foreman_nodes'] }}"
+    
+    - name: Install git
+      become: true
+      yum:
+        name: git
+      remote_user: root
+      delegate_to: "{{ item }}"
+      with_items: "{{ groups['foreman_nodes'] }}"

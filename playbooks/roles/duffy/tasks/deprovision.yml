@@ -1,0 +1,7 @@
+---
+- name: 'Deprovision nodes'
+  cico:
+    action: "done"
+    api_key: "{{ api_key }}"
+    ssid: "{{ ansible_local.ci.facts.session }}"
+  delegate_to: localhost

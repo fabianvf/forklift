@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+  gather_facts: False
+  vars:
+    host_data: "{{ lookup('file', './host_data.json') | from_json }}"
+  tasks:
+    - name: "Load host data"
+      copy:
+        content: "{{ host_data }}"
+        dest: "./host_data.json"
+
+    - name: 'host_data'
+      debug:
+        msg: "{{ host_data }}"
+
+    - name: "teardown nodes from ssid"
+      duffy_ansible:
+        state: "absent"
+        ssid: "{{ host_data.ssid }}"

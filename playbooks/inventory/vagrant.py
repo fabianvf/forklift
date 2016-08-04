@@ -43,9 +43,17 @@ def get_host_details(host):
             'ansible_ssh_private_key_file': c['identityfile'][0]}
 
 
+def vagrant_present():
+    cmd = "which vagrant"
+    status = subprocess.call(cmd.split())
+    return status   
+
 def main():
     args = parse_args()
-    if args.list:
+
+    if not vagrant_present() == 0:
+        json.dump({}, sys.stdout)
+    elif args.list:
         hosts = list_running_hosts()
         json.dump(hosts, sys.stdout)
     else:

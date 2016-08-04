@@ -1,0 +1,4 @@
+---
+api_key: "{{ lookup('file', '~/duffy.key') }}"
+private_key: "~/.ssh/id_rsa"
+cico_data: "{{ lookup('file', 'cico_data.json') | from_json }}"

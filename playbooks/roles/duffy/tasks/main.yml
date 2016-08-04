@@ -1,0 +1,9 @@
+---
+- include: provision.yml
+  when: action is defined and action == "provision"
+
+  #- include: load_hosts.yml
+  #when: action is defined and action == "load_hosts"
+
+  #- include: deprovision.yml
+  #when: action is defined and action == "deprovision"

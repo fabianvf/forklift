@@ -1,0 +1,27 @@
+---
+- hosts: localhost
+  vars:
+    host_data: "{{ lookup('file', './host_data.json') | from_json }}"
+    private_key: "~/.ssh/id_rsa"
+  tasks:
+    - name: Add requested nodes to hosts file
+      add_host:
+        name: "{{ item }}"
+        groups: "nodes"
+        ansible_fqdn: "{{ item }}"
+        ansible_ssh_user: "root"
+        ansible_ssh_private_key_file: "{{ private_key }}"
+      with_items: "{{ host_data.hosts }}"
+    - name: 'Make archive directory'
+      file:
+        path: '.archive'
+        state: 'directory'
+
+- hosts: nodes
+  tasks:
+    - name: 'Generate debug output'
+      shell: foreman-debug -d /root/foreman-debug
+    - name: 'Get debug'
+      fetch:
+        dest: '.archive'
+        src: /root/foreman-debug.tar.xz
