@@ -43,4 +43,4 @@
         state: directory
 
     - debug:
-        msg: "{{ cluster_up.stdout.split('\n') }}"
+        msg: "{{ cluster_up.stdout | join('') }}"

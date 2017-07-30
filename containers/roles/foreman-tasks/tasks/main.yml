@@ -1,4 +1,6 @@
 ---
+- include: hacks.yml
+
 - name: "Add foreman-tasks startup script"
   copy:
     src: "{{ role_path }}/files/{{ item }}"

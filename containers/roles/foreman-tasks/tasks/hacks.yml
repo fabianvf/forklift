@@ -1,0 +1,6 @@
+---
+- name: 'Add Katello verify SSL'
+  get_url:
+    url: https://raw.githubusercontent.com/iNecas/foreman-tasks/40bcfb4293236903cc3de3eb89cca6e014daa098/lib/foreman_tasks/dynflow/daemon.rb
+    dest: /opt/theforeman/tfm/root/usr/share/gems/gems/foreman-tasks-0.9.4/lib/foreman_tasks/dynflow/daemon.rb
+    force: yes
