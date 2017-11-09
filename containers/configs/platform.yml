@@ -1,0 +1,7 @@
+---
+foreman: present
+postgres: present
+puppet: present
+pulp: present
+candlepin: present
+foreman-proxy: present

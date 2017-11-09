@@ -21,6 +21,12 @@ defaults:
   MONGODB_DATABASE: pulp_database
   MONGODB_PORT: 27017
   RAILS_ENV: production
+  foreman: absent
+  candlepin: absent
+  foreman_proxy: absent
+  pulp: absent
+  puppet: absent
+  postgres: absent
 
 services:
   foreman-base:
@@ -71,7 +77,7 @@ services:
           - env_variable: WOOT_WOOT
             key: ca.crt
     openshift:
-      state: present
+      state: "{{ foreman }}"
       deployment:
         force: false
         replicas: 2
@@ -81,7 +87,7 @@ services:
     expose:
       - 11211
     openshift:
-      state: present
+      state: "{{ foreman }}"
       deployment:
         force: false
         replicas: 1
@@ -113,7 +119,7 @@ services:
               - key: pulp-client.crt
                 path: pulp-client.crt
     openshift:
-      state: present
+      state: "{{ foreman }}"
       deployment:
         force: false
         replicas: 1
@@ -128,7 +134,7 @@ services:
     expose:
       - 8080
     openshift:
-      state: present
+      state: "{{ foreman_proxy }}"
       deployment:
         force: false
         replicas: 1
@@ -145,7 +151,7 @@ services:
       - FOREMAN_SERVICE_HOST=foreman
       - FOREMAN_SERVICE_PORT=8080
     openshift:
-      state: present
+      state: "{{ foreman_proxy }}"
       deployment:
         force: false
         replicas: 1
@@ -156,7 +162,7 @@ services:
     expose:
       - 8140
     openshift:
-      state: present
+      state: "{{ puppet }}"
       deployment:
         force: false
         replicas: 1
@@ -188,7 +194,7 @@ services:
               - key: ca.crt
                 path: candlepin-ca.crt
     openshift:
-      state: present
+      state: "{{ candlepin }}"
       deployment:
         force: false
         replicas: 1
@@ -206,7 +212,7 @@ services:
     expose:
       - "{{ POSTGRES_PORT }}"
     openshift:
-      state: present
+      state: "{{ postgres }}"
       deployment:
         force: false
         replicas: 1
@@ -242,7 +248,7 @@ services:
               - key: pulp.crt
                 path: pulp.crt
     openshift:
-      state: present
+      state: "{{ pulp }}"
       deployment:
         force: false
         replicas: 1
@@ -256,7 +262,7 @@ services:
       - pulp-data:/var/lib/pulp
       - puppet-data:/etc/puppet
     openshift:
-      state: present
+      state: "{{ pulp }}"
       deployment:
         force: false
         replicas: 4
@@ -267,7 +273,7 @@ services:
     entrypoint: ['/usr/bin/entrypoint.sh']
     user: apache
     openshift:
-      state: present
+      state: "{{ pulp }}"
       deployment:
         force: false
         replicas: 1
@@ -278,7 +284,7 @@ services:
     entrypoint: ['/usr/bin/entrypoint.sh']
     user: apache
     openshift:
-      state: present
+      state: "{{ pulp }}"
       deployment:
         force: false
         replicas: 1
@@ -297,7 +303,7 @@ services:
     expose:
       - "{{ MONGODB_PORT }}"
     openshift:
-      state: present
+      state: "{{ pulp }}"
       deployment:
         force: false
         replicas: 1
@@ -310,7 +316,7 @@ services:
     expose:
       - 5672
     openshift:
-      state: present
+      state: "{{ pulp }}"
       deployment:
         force: false
         replicas: 1
@@ -340,7 +346,7 @@ services:
               - key: pulp.crt
                 path: pulp.crt
     openshift:
-      state: present
+      state: "{{ pulp }}"
       deployment:
         force: false
         replicas: 1
