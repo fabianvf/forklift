@@ -1,8 +1,8 @@
 ---
 - hosts: localhost
   vars:
-    openshift_version: v3.6.0
-    openshift_checksum: c4dd4cf
+    openshift_version: v3.6.1
+    openshift_checksum: 008f2d5
   tasks:
     - name: 'Create .tmp directory'
       file:

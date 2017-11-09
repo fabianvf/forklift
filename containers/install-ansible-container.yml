@@ -19,6 +19,6 @@
 
     - name: 'Install ansible-container'
       become: true
-      command: 'pip3 install -e .[docker,openshift]'
+      command: 'pip3 install -e .[docker,openshift] --upgrade'
       args:
         chdir: .tmp/ansible-container
