@@ -1,0 +1,6 @@
+---
+project_dir: "{{ lookup('pipe', 'pwd') }}/../"
+certificates_ca_directory: "{{ project_dir }}/certs"
+registry: oc-cluster
+openshift_data_dir: /home/origin
+

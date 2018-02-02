@@ -1,8 +1,7 @@
 ---
 - name: 'Set build variables'
   set_fact:
-    ca_crt: "{{ lookup('file', certificates_ca_directory_certs + '/ca.crt') }}"
-    build_dir: "{{ lookup('pipe', 'pwd') }}/certs/rpmbuild"
+    build_dir: "{{ certificates_ca_directory }}/certs/rpmbuild"
 
 - name: 'Make build directory'
   file:

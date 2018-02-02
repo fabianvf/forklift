@@ -1,0 +1,11 @@
+---
+- hosts: all
+  gather_facts: no
+  vars:
+    project_dir: /root/forklift
+    services: ''
+  tasks:
+    - name: 'Run build'
+      shell: "ansible-container --devel build {{ services }}"
+      args:
+        chdir: "{{ project_dir }}/containers"

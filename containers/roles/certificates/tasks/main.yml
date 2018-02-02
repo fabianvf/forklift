@@ -4,4 +4,4 @@
 - include_tasks: certificate.yml
   with_items: "{{ certificates_services }}"
 
-- include_tasks: client_rpm.yml
+  #- include_tasks: client_rpm.yml

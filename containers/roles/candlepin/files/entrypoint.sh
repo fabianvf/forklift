@@ -7,12 +7,12 @@ set -x
 /usr/bin/gen-certs
 
 /usr/share/candlepin/cpdb --create \
-                          --schema-only \
-                          --dbhost=$POSTGRES_SERVICE \
-                          --dbport=$POSTGRES_PORT \
-                          --database=$POSTGRES_DB \
-                          --user=$POSTGRES_USER  \
-                          --password=$POSTGRES_PASSWORD
+										      --schema-only \
+										      --dbhost=$POSTGRES_SERVICE \
+										      --dbport=$POSTGRES_PORT \
+										      --database=$POSTGRES_DB \
+										      --user=$POSTGRES_USER  \
+										      --password=$POSTGRES_PASSWORD
 
 qpid-config -b tcp://${QPID_SERVICE}:${QPID_PORT} exchanges event
 

@@ -2,7 +2,13 @@
 version: "2"
 
 settings:
-  conductor_base: centos:7
+  conductor:
+    base: centos:7
+    roles_path:
+      - ./roles
+      - ../roles/
+    environment:
+      DOCKER_CLIENT_TIMEOUT: '600'
   project_name: foreman
   vault_files:
     - secrets.yml
@@ -87,6 +93,7 @@ services:
       - POSTGRES_DB={{ POSTGRES_DB }}
       - POSTGRES_USER={{ POSTGRES_USER }}
       - POSTGRES_PASSWORD={{ POSTGRES_PASSWORD }}
+      - RAILS_ENV={{ RAILS_ENV }}
     secrets:
       keys:
         openshift:

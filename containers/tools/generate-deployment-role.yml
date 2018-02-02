@@ -1,14 +1,15 @@
 ---
-- import_playbook: generate-certs.yml
-
-- hosts: localhost
+- hosts: all
   gather_facts: no
-  vars:
-    registry: oc-cluster
   tasks:
+    - name: 'Check for Foreman project'
+      command: oc project foreman
+      register: project_exists
+      ignore_errors: true
+
     - name: 'Create Foreman project'
       command: oc new-project foreman
-      ignore_errors: true
+      when: project_exists | failed
 
     - name: 'Get Openshift token'
       command: 'oc whoami -t'
@@ -16,8 +17,11 @@
 
     - name: 'Generate deployment role'
       command: "ansible-container --devel --engine openshift deploy --push-to {{ registry }} --username developer --password {{ token.stdout }} --tag latest --roles-path ../roles"
+      args:
+        chdir: "{{ project_dir }}"
 
     - name: 'Copy secrets file'
       copy:
-        src: ./secrets.yml
-        dest: ansible-deployment/secrets.yml
+        src: "{{ project_dir }}/secrets.yml"
+        dest: "{{ project_dir }}/ansible-deployment/secrets.yml"
+        remote_src: yes

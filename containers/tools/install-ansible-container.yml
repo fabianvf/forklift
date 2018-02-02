@@ -1,0 +1,50 @@
+---
+- hosts: all
+  gather_facts: no
+  vars:
+    project_dir: "/root"
+  tasks:
+    - name: 'Install pip'
+      yum:
+        name: python-pip
+        state: present
+
+    - name: 'Update setuptools'
+      pip:
+        name: setuptools
+        state: latest
+
+    - name: 'Install git'
+      yum:
+        name: git
+        state: present
+
+    - name: 'Create .tmp directory'
+      file:
+        path: "{{ project_dir }}/.tmp"
+        state: directory
+
+    - name: 'Clone ansible-container'
+      git:
+        repo: https://github.com/ansible/ansible-container.git
+        dest: "{{ project_dir }}/.tmp/ansible-container"
+        update: yes
+        force: yes
+
+    - name: 'Download patch'
+      get_url:
+        url: https://patch-diff.githubusercontent.com/raw/ansible/ansible-container/pull/872.patch
+        dest: "{{ project_dir }}/.tmp/ansible-container/872.patch"
+
+    - name: 'Apply patch'
+      command: 'git am 872.patch'
+      args:
+        chdir: "{{ project_dir }}/.tmp/ansible-container"
+
+    - name: 'Install ansible-container'
+      command: "pip install -e .[docker,openshift] --upgrade"
+      args:
+        chdir: "{{ project_dir }}/.tmp/ansible-container"
+
+    - name: 'Install updated openshift'
+      command: 'pip install openshift --upgrade'
