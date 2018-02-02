@@ -1,0 +1,10 @@
+---
+- hosts: all
+  gather_facts: no
+  vars:
+    services: ''
+  tasks:
+    - name: 'Run build'
+      shell: "ansible-container --devel build {{ services }}"
+      args:
+        chdir: "{{ working_dir }}"
