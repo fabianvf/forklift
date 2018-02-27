@@ -42,6 +42,11 @@ services:
       - foreman
     openshift:
       state: absent
+  foreman-devel:
+    from: centos:7
+    roles:
+      - epel_repositories
+      - foreman_devel
   foreman:
     from: foreman-foreman-base:latest
     roles:

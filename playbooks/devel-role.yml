@@ -1,0 +1,14 @@
+---
+- hosts: all
+  become: true
+  vars:
+    katello_repositories_version: nightly
+    foreman_installer_scenario: katello
+  roles:
+    - etc_hosts
+    - epel_repositories
+    - ostree_repositories
+    - puppet_repositories
+    - foreman_repositories
+    - katello_repositories
+    - foreman_devel

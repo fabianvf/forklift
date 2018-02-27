@@ -3,8 +3,9 @@
   gather_facts: no
   vars:
     services: ''
+    working_dir: "{{ lookup('pipe', 'pwd') }}/.."
   tasks:
     - name: 'Run build'
-      shell: "ansible-container --devel build {{ services }}"
+      shell: "ansible-container --devel {{ '--vars-file' if vars_file else '' }} {{ vars_file }} build {{ '--services' if services else '' }} {{ services }}"
       args:
         chdir: "{{ working_dir }}"

@@ -1,0 +1,22 @@
+---
+#:puppet_server: puppet
+:unattended: true
+:login: true
+:require_ssl: false
+:locations_enabled: true
+:organizations_enabled: true
+
+## The following values are used for providing default settings during db migrate
+:oauth_active: true
+:oauth_map_users: true
+:oauth_consumer_key: {{ foreman_devel_oauth_key }}
+:oauth_consumer_secret: {{ foreman_devel_oauth_secret }}
+
+# SSL settings
+:ssl_ca_file: {{ foreman_devel_ssl_ca_cert }}
+:ssl_certificate: {{ foreman_devel_client_cert }}
+:ssl_priv_key: {{ foreman_devel_client_key }}
+
+# webpack dev server settings
+:webpack_dev_server: {{ foreman_devel_webpack_dev_server }}
+:webpack_dev_server_https: true

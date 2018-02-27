@@ -1,0 +1,14 @@
+---
+- name: 'Set plugin name'
+  set_fact:
+    plugin_name: "{{ item.split('/')[1] }}"
+
+- name: "Clone {{ item }}"
+  git:
+    repo: "https://github.com/{{ item }}"
+    dest: "{{ foreman_devel_deployment_dir }}/{{ plugin_name }}"
+
+- name: 'Plugin bundler file'
+  template:
+    src: "templates/plugin.local.rb.j2"
+    dest: "{{ foreman_devel_deployment_dir }}/foreman/bundler.d/{{ plugin_name }}.local.rb"

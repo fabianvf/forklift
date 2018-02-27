@@ -1,0 +1,26 @@
+development:
+  adapter: {{ foreman_devel_db_adapter }}
+  database: {{ foreman_devel_db_name }}
+  username: {{ foreman_devel_db_username }}
+  password: {{ foreman_devel_db_password }}
+  host: localhost
+  encoding: UTF8
+  template: template0
+
+test:
+  adapter: {{ foreman_devel_db_adapter }}
+  database: {{ foreman_devel_db_name }}_test
+  username: {{ foreman_devel_db_username }}
+  password: {{ foreman_devel_db_password }}
+  host: localhost
+  encoding: UTF8
+  template: template0
+
+production:
+  adapter: {{ foreman_devel_db_adapter }}
+  database: {{ foreman_devel_db_name }}_prod
+  username: {{ foreman_devel_db_username }}
+  password: {{ foreman_devel_db_password }}
+  host: localhost
+  encoding: UTF8
+  template: template0

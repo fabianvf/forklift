@@ -1,3 +1,30 @@
 ---
+- include_tasks: dependencies.yml
+
+- name: 'Clone foreman'
+  git:
+    repo: 'https://github.com/theforeman/foreman'
+    dest: "{{ foreman_devel_deployment_dir }}/foreman"
+
+- name: 'Deploy database.yml'
+  template:
+    src: "templates/database.yml.j2"
+    dest: "{{ foreman_devel_deployment_dir }}/foreman/config/database.yml"
+
+- name: 'Deploy settings.yaml'
+  template:
+    src: "templates/settings.yaml.j2"
+    dest: "{{ foreman_devel_deployment_dir }}/foreman/config/settings.yaml"
+
+- name: 'Clone and configure plugins'
+  include_tasks: plugin.yml
+  with_items:
+    - katello/katello
+
 - include_tasks: github_push_ssh.yml
   when: foreman_devel_github_push_ssh
+
+- name: 'Bundle install'
+  shell: "scl enable rh-ruby24 'bundle install --without mysql:mysql2:sqlite'"
+  args:
+    chdir: "{{ foreman_devel_deployment_dir }}/foreman"

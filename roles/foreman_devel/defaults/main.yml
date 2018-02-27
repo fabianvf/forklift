@@ -1,2 +1,12 @@
 ---
 foreman_devel_github_push_ssh: False
+foreman_devel_db_adapter: postgresql
+foreman_devel_db_name: foreman
+foreman_devel_db_username: foreman
+foreman_devel_db_password: foreman
+foreman_devel_webpack_dev_server: true
+foreman_devel_oauth_key: foreman
+foreman_devel_oauth_secret: foreman
+foreman_devel_ssl_ca_cert: /etc/pki/katello/certs/ca.crt
+foreman_devel_client_cert: /etc/pki/katello/certs/foreman-client.crt
+foreman_devel_client_key: /etc/pki/katello/private/foreman-client.key
