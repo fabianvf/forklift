@@ -1,0 +1,48 @@
+---
+- name: 'Install docker'
+  yum:
+    name: docker
+    state: present
+
+- name: 'Configure insecure registry'
+  lineinfile:
+    dest: /etc/sysconfig/docker
+    line: INSECURE_REGISTRY='--insecure-registry 172.30.0.0/16'
+    regexp: "^INSECURE_REGISTRY"
+  notify:
+    - 'Restart docker'
+
+- name: 'Install pip'
+  yum:
+    name: python-pip
+    state: present
+
+- name: 'Update setuptools'
+  pip:
+    name: setuptools
+    state: latest
+
+- name: 'Install git'
+  yum:
+    name: git
+    state: present
+
+- name: 'Create .tmp directory'
+  file:
+    path: "{{ working_dir }}/.tmp"
+    state: directory
+
+- name: 'Clone ansible-container'
+  git:
+    repo: https://github.com/ansible/ansible-container.git
+    dest: "{{ working_dir }}/.tmp/ansible-container"
+    update: yes
+    force: yes
+
+- name: 'Install ansible-container'
+  shell: "pip install -e .[docker,openshift] --upgrade"
+  args:
+    chdir: "{{ working_dir }}/.tmp/ansible-container"
+
+- name: 'Install updated openshift'
+  command: 'pip install openshift ansible --upgrade'

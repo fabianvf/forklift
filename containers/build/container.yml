@@ -1,0 +1,22 @@
+---
+version: "2"
+settings:
+  conductor:
+    base: centos:7
+    roles_path:
+      - ./roles
+      - ../roles/
+      - ../../roles/
+  project_name: build
+defaults:
+  working_dir: /root
+services:
+  build:
+    from: centos:7
+    roles:
+      - epel_repositories
+      - build
+    command: ["ansible-container", "--devel", "build"]
+    volumes:
+      - $PWD/../../:/opt/forklift
+registries: {}

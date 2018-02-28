@@ -1,5 +1,6 @@
 ---
 - name: 'Install devel packages'
+  become: true
   yum:
     name: "{{ item }}"
     state: present
@@ -15,6 +16,7 @@
     - qpid-cpp-client-devel
 
 - name: 'Install devel packages'
+  become: true
   yum:
     name: "{{ item }}"
     state: present

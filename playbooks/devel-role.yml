@@ -11,4 +11,9 @@
     - puppet_repositories
     - foreman_repositories
     - katello_repositories
+
+- hosts: all
+  vars:
+    foreman_devel_deployment_dir: /home/vagrant
+  roles:
     - foreman_devel

@@ -31,16 +31,6 @@
         update: yes
         force: yes
 
-    - name: 'Download patch'
-      get_url:
-        url: https://patch-diff.githubusercontent.com/raw/ansible/ansible-container/pull/872.patch
-        dest: "{{ working_dir }}/.tmp/ansible-container/872.patch"
-
-    - name: 'Apply patch'
-      command: 'git am 872.patch'
-      args:
-        chdir: "{{ working_dir }}/.tmp/ansible-container"
-
     - name: 'Install ansible-container'
       command: "pip install -e .[docker,openshift] --upgrade"
       args:

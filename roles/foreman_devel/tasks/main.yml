@@ -4,7 +4,15 @@
 - name: 'Clone foreman'
   git:
     repo: 'https://github.com/theforeman/foreman'
+    refspec: '+refs/pull/*/head:refs/remotes/origin/pr/*'
     dest: "{{ foreman_devel_deployment_dir }}/foreman"
+
+- name: 'Configure user fork of foreman'
+  git:
+    repo: "https://github.com/{{ foreman_devel_github_user }}/foreman"
+    dest: "{{ foreman_devel_deployment_dir }}/foreman"
+    remote: "{{ foreman_devel_github_user }}"
+  when: foreman_devel_github_user is defined
 
 - name: 'Deploy database.yml'
   template:
@@ -28,3 +36,11 @@
   shell: "scl enable rh-ruby24 'bundle install --without mysql:mysql2:sqlite'"
   args:
     chdir: "{{ foreman_devel_deployment_dir }}/foreman"
+
+- name: 'Enable SCL context by default'
+  lineinfile:
+    path: /home/vagrant/.bashrc
+    line: "{{ item }}"
+  with_items:
+    - "set BASH_ENV PROMPT_COMMAND ENV"
+    - "source scl_source enable rh-ruby24"

@@ -6,7 +6,15 @@
 - name: "Clone {{ item }}"
   git:
     repo: "https://github.com/{{ item }}"
+    refspec: '+refs/pull/*/head:refs/remotes/origin/pr/*'
     dest: "{{ foreman_devel_deployment_dir }}/{{ plugin_name }}"
+
+- name: "Configure user fork of {{ item }}"
+  git:
+    repo: "https://github.com/{{ foreman_devel_github_user }}/{{ plugin_name }}"
+    dest: "{{ foreman_devel_deployment_dir }}/{{ plugin_name }}"
+    remote: "{{ foreman_devel_github_user }}"
+  when: foreman_devel_github_user is defined
 
 - name: 'Plugin bundler file'
   template:
