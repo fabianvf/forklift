@@ -19,3 +19,4 @@ requirements.yml
 settings.yaml
 boxes.d/*-local.yaml
 boxes.d/80-tmp-*.yaml
+foreman-ansible-modules

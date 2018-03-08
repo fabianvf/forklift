@@ -1,0 +1,67 @@
+- hosts: localhost
+  vars:
+    forklift_name: pipeline-katello-nightly
+    forklift_boxes:
+      pipeline-katello-nightly-centos7:
+        box: centos7
+        memory: 7680
+      pipeline-client-centos7:
+        box: centos7
+        memory: 1024
+  roles:
+    - forklift
+
+- hosts:
+  - pipeline-katello-nightly-centos7
+  become: yes
+  vars:
+    katello_repositories_version: nightly
+    foreman_repositories_version: nightly
+    katello_repositories_environment: staging
+    foreman_repositories_environment: staging
+    foreman_installer_skip_installer: true
+    foreman_installer_additional_packages:
+      - foreman-installer-katello
+  roles:
+    - umask
+    - selinux
+    - etc_hosts
+    - epel_repositories
+    - puppet_repositories
+    - foreman_repositories
+    - katello_repositories
+    - disable_firewall
+    - haveged
+    - update_os_packages
+    - foreman_installer
+
+- hosts: pipeline-katello-nightly-centos7
+  become: yes
+  vars:
+    foreman_installer_scenario: katello
+    foreman_installer_options_internal_use_only:
+      - "--disable-system-checks"
+      - "--foreman-admin-password {{ foreman_installer_admin_password }}"
+    foreman_installer_additional_packages:
+      - katello
+  roles:
+    - disable_ipv6
+    - foreman_installer
+
+- hosts: pipeline-client-centos7
+  become: yes
+  vars:
+    katello_client_server: pipeline-katello-nightly-centos7.woodford.example.com
+  roles:
+    - katello_client
+
+- import_playbook: ../seed/simple-sync.yml
+  vars:
+    server: https://pipeline-katello-nightly-centos7.woodford.example.com
+
+- hosts:
+  - pipeline-katello-nightly-centos7
+  become: yes
+  tasks:
+    - name: 'Run katello-backup'
+      command: 'katello-backup /tmp -y'

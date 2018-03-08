@@ -1,0 +1,40 @@
+---
+- hosts: localhost
+  vars:
+    username: admin
+    password: changeme
+    organization: Default Organization
+    product: Zoo
+    repository: Zoo Repo
+    repository_url: https://repos.fedorapeople.org/repos/pulp/pulp/demo_repos/zoo2/
+  tasks:
+    - name: 'Create Zoo product'
+      katello_product:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        server_url: "{{ server }}"
+        organization: "{{ organization }}"
+        name: "{{ product }}"
+        verify_ssl: false
+
+    - name: 'Satellite 6.3 repositories'
+      katello_repository:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        server_url: "{{ server }}"
+        organization: "{{ organization }}"
+        product: "{{ product }}"
+        name: "{{ repository }}"
+        content_type: yum
+        url: "{{ repository_url }}"
+        verify_ssl: false
+
+    - name: "Sync repositories"
+      katello_sync:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        server_url: "{{ server }}"
+        repository: "{{ repository }}"
+        product: "{{ product }}"
+        organization: "{{ organization }}"
+        verify_ssl: False
