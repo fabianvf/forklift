@@ -63,6 +63,20 @@ Pulp is a backend service that provides content mirroring services for the Forem
     Requires:
       - Qpid
 
+    Name: Pulp Streamer
+    Description: Used for lazy sync to fetch packages that do not exist locally
+    Used By:
+      - Squid
+    Requires:
+      - MongoDB
+
+    Name: Squid
+    Description: Caches package downloads for up to 10 minutes when using lazy sync
+    Used By:
+      - Content Server
+    Requires:
+      - Pulp Streamer
+
 #### Candlepin
 
 Candlepin is a backend service that provides entitlement management for content and hosts.
@@ -146,18 +160,16 @@ There are high number of persistent volumes required by the entirety of the depl
     Name: MongoDB Data
     Description: Used by MongoDB to store database data
     Used By:
-      - Pulp
       - Pulp Worker
 
     Name: Pulp RPM Content
     Description: Used by Pulp to store RPM content on disk
     Used By:
-      - Pulp
       - Pulp Worker
+      - Content Server
 
     Name: Puppet Content
     Description: Stores puppet modules imported to Pulp and used by Puppet server to send out to hosts managed by Puppet
     Used By:
-      - Pulp
       - Pulp Worker
       - Puppet Server
