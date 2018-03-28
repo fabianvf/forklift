@@ -7,6 +7,14 @@
   tags:
     - stop
     - restart
+- name: Stop running containers by scaling replicas down to 0
+  openshift_v1_deployment_config:
+      name: dispatch-router
+      namespace: foreman
+      replicas: 0
+  tags:
+    - stop
+    - restart
 - name: Create deployment, and scale replicas up
   openshift_v1_deployment_config:
       state: "{{ deployment_state }}"
@@ -34,6 +42,42 @@
                           args:
                             - /usr/bin/startup.sh
                           image: "{{ registry }}/foreman-qpid:latest"
+                      serviceAccount: anyuid
+                      serviceAccountName: anyuid
+              replicas: 1
+              strategy:
+                  type: Rolling
+  tags:
+    - start
+    - restart
+    - destroy
+- name: Create deployment, and scale replicas up
+  openshift_v1_deployment_config:
+      state: "{{ deployment_state }}"
+      force: false
+      resource_definition:
+          apiVersion: v1
+          kind: deployment_config
+          metadata:
+              name: dispatch-router
+              namespace: "{{ project_name }}"
+              labels:
+                  app: foreman
+                  service: dispatch-router
+          spec:
+              template:
+                  metadata:
+                      labels:
+                          app: foreman
+                          service: dispatch-router
+                  spec:
+                      containers:
+                        - name: dispatch-router
+                          securityContext: {}
+                          state: present
+                          args:
+                            - /usr/bin/start_dispatch_router.sh
+                          image: "{{ registry }}/foreman-dispatch-router:latest"
                       serviceAccount: anyuid
                       serviceAccountName: anyuid
               replicas: 1

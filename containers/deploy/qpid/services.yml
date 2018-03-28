@@ -24,3 +24,32 @@
   tags:
     - start
     - destroy
+- name: Create service
+  k8s_v1_service:
+      state: "{{ deployment_state }}"
+      force: false
+      resource_definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+              name: dispatch-router
+              namespace: "{{ project_name }}"
+              labels:
+                  app: foreman
+                  service: dispatch-router
+          spec:
+              selector:
+                  app: foreman
+                  service: dispatch-router
+              ports:
+                - protocol: TCP
+                  targetPort: 5647
+                  name: port-5647-tcp
+                  port: 5647
+                - protocol: TCP
+                  targetPort: 5646
+                  name: port-5646-tcp
+                  port: 5646
+  tags:
+    - start
+    - destroy

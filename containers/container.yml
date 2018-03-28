@@ -105,6 +105,11 @@ services:
     roles:
       - content-server
       - registration-gateway
+  dispatch-router:
+    from: centos:7
+    roles:
+      - epel_repositories
+      - dispatch-router
 
 registries:
   oc-cluster:

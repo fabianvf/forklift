@@ -1,0 +1,26 @@
+---
+- name: 'Install dispatch-router packages'
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - qpid-dispatch-router
+
+- name: 'Deploy startup script'
+  copy:
+    src: "{{ role_path }}/files/qdrouterd.conf"
+    dest: "/etc/qpid-dispatch/qdrouterd.conf"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: 'Deploy startup script'
+  copy:
+    src: "{{ role_path }}/files/{{ item }}"
+    dest: "/usr/bin/{{ item }}"
+    owner: root
+    group: root
+    mode: 0775
+  with_items:
+    - start_dispatch_router.sh
