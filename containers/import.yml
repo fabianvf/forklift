@@ -1,0 +1,17 @@
+- name: Import data from existing Foreman installation
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  roles:
+    - role: ansible-kubernetes-modules
+  tasks:
+    - set_fact:
+        deployment_state: present
+
+    - set_fact:
+        project_name: "{{ project_name | default('foreman') }}"
+
+    - import_tasks: deploy/project.yml
+    - import_tasks: deploy/postgres/persistent_volume_claims.yml
+    - import_tasks: deploy/pulp/persistent_volume_claims.yml
+    - import_tasks: deploy/import/jobs.yml

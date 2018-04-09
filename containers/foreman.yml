@@ -7,6 +7,7 @@
   vars_files:
     - secrets.yml
   vars:
+    data_import: false
     minishift: true
     pulp_worker_count: 2
     registry: projgriffin
@@ -46,6 +47,11 @@
     - import_tasks: deploy/foreman/persistent_volume_claims.yml
     - import_tasks: deploy/postgres/persistent_volume_claims.yml
     - import_tasks: deploy/pulp/persistent_volume_claims.yml
+
+    - import_tasks: deploy/import/jobs.yml
+      when: data_import
+      tags:
+        - start
 
     - import_tasks: deploy/candlepin/services.yml
     - import_tasks: deploy/foreman-proxy/services.yml

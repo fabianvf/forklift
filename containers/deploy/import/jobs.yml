@@ -1,0 +1,72 @@
+---
+- fail: msg="Import task requires \'import_source_host\' and \'import_source_user\' to be provided"
+  when: import_source_host is undefined or import_source_user is undefined
+
+- name: Remove existing jobs
+  k8s_v1_job:
+    state: absent
+    namespace: foreman
+    name: "{{ item }}-import"
+  with_items:
+  - pulp
+  - mongodb
+  - puppet
+  - postgres
+
+- name: Create data import jobs
+  k8s_v1_job:
+    state: "{{ deployment_state }}"
+    namespace: "{{ project_name }}"
+    resource_definition:
+      apiVersion: batch/v1
+      kind: Job
+      metadata:
+        name: "{{ item.name }}-import"
+      spec:
+        template:
+          metadata:
+            name: "{{ item.name }}-import"
+          spec:
+            containers:
+            - name: "{{ item.name }}-import"
+              env:
+              - name: SOURCE_DIRECTORY
+                value: "{{ item.source }}"
+              - name: SOURCE_HOST
+                value: "{{ import_source_host }}"
+              - name: SOURCE_USER
+                value: "{{ import_source_user }}"
+              image: docker.io/bdunne/data-sync:latest
+              volumeMounts:
+              - name: ssh-private-key
+                mountPath: "/root/.ssh"
+              - name: "{{ item.name }}-data"
+                mountPath: "/pv"
+            volumes:
+            - name: ssh-private-key
+              secret:
+                secretName: data-import-secret
+            - name: "{{ item.name }}-data"
+              persistentVolumeClaim:
+                claimName: "{{ item.name }}-data"
+            restartPolicy: Never
+  with_items:
+  - {name: 'pulp',     source: '/var/lib/pulp'}
+  - {name: 'mongodb',  source: '/var/lib/mongodb'}
+  - {name: 'puppet',   source: '/etc/puppetlabs/code/environments'}
+  - {name: 'postgres', source: '/var/lib/postgresql/data'}
+
+- name: Check job state
+  k8s_v1_job:
+    state: present
+    namespace: foreman
+    name: "{{ item }}-import"
+  register: job
+  with_items:
+  - pulp
+  - mongodb
+  - puppet
+  - postgres
+  until: job["job"]["status"]["succeeded"] == 1
+  delay: 10
+  retries: 200
