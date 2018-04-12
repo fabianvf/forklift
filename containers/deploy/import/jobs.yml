@@ -68,5 +68,5 @@
   - puppet
   - postgres
   until: job["job"]["status"]["succeeded"] == 1
-  delay: 10
-  retries: 200
+  delay: 30
+  retries: 480
