@@ -5,7 +5,7 @@
 - name: Remove existing jobs
   k8s_v1_job:
     state: absent
-    namespace: foreman
+    namespace: "{{ project_name }}"
     name: "{{ item }}-import"
   with_items:
   - pulp
@@ -53,13 +53,13 @@
   with_items:
   - {name: 'pulp',     source: '/var/lib/pulp'}
   - {name: 'mongodb',  source: '/var/lib/mongodb'}
-  - {name: 'puppet',   source: '/etc/puppetlabs/code/environments'}
-  - {name: 'postgres', source: '/var/lib/postgresql/data'}
+  - {name: 'puppet',   source: '/etc/puppet/environments'}
+  - {name: 'postgres', source: '/var/lib/pgsql/data'}
 
 - name: Check job state
   k8s_v1_job:
     state: present
-    namespace: foreman
+    namespace: "{{ project_name }}"
     name: "{{ item }}-import"
   register: job
   with_items:
