@@ -40,6 +40,11 @@
     - import_tasks: deploy/project.yml
 
     - import_tasks: deploy/secrets/secrets.yml
+    - import_tasks: deploy/secrets/import_secrets.yml
+      when: data_import
+      tags:
+        - start
+
     - import_tasks: deploy/foreman/config-maps.yml
 
     - import_tasks: deploy/service_accounts.yml
