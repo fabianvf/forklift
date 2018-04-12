@@ -45,7 +45,7 @@
             volumes:
             - name: ssh-private-key
               secret:
-                secretName: data-import-secret
+                secretName: data-import
             - name: "{{ item.name }}-data"
               persistentVolumeClaim:
                 claimName: "{{ item.name }}-data"
