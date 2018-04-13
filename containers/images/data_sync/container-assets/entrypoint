@@ -1,5 +1,7 @@
 #!/bin/bash
 
-. /nss_wrapper
-
-rsync -rvh --progress --delete -e "ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" $SOURCE_USER@$SOURCE_HOST:$SOURCE_DIRECTORY/ /pv/
+cp /root/.ssh/id_rsa /root/id_rsa
+chmod 600 /root/id_rsa
+rsync -lrvh --progress --delete -e "ssh -i /root/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" $SOURCE_USER@$SOURCE_HOST:$SOURCE_DIRECTORY/ /pv/
+chown -R :root /pv/*
+chmod -R g+rw /pv/*

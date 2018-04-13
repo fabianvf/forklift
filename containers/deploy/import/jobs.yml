@@ -27,6 +27,8 @@
           metadata:
             name: "{{ item.name }}-import"
           spec:
+            serviceAccount: anyuid
+            serviceAccountName: anyuid
             containers:
             - name: "{{ item.name }}-import"
               env:
@@ -53,7 +55,7 @@
   with_items:
   - {name: 'pulp',     source: '/var/lib/pulp'}
   - {name: 'mongodb',  source: '/var/lib/mongodb'}
-  - {name: 'puppet',   source: '/etc/puppet/environments'}
+  - {name: 'puppet',   source: '/etc/puppetlabs/code/environments'}
   - {name: 'postgres', source: '/var/lib/pgsql/data'}
 
 - name: Check job state

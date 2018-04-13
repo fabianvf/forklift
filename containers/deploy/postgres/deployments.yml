@@ -27,6 +27,8 @@
                           app: foreman
                           service: postgres
                   spec:
+                      serviceAccount: anyuid
+                      serviceAccountName: anyuid
                       containers:
                         - name: postgres
                           securityContext: {}
@@ -39,7 +41,7 @@
                             - name: POSTGRES_PASS
                               value: foreman
                             - name: PGDATA
-                              value: /var/lib/pgsql/data/userdata
+                              value: /var/lib/pgsql/data
                           volumeMounts:
                             - readOnly: false
                               mountPath: /var/lib/pgsql/data
