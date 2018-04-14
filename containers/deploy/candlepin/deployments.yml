@@ -37,6 +37,8 @@
                             - readOnly: true
                               mountPath: /etc/candlepin/certs
                               name: ca
+                            - mountPath: /etc/candlepin/
+                              name: candlepin-conf
                           env:
                             - name: POSTGRES_DB
                               value: foreman
@@ -58,6 +60,9 @@
                             - /usr/bin/entrypoint.sh
                           image: "{{ registry }}/foreman-candlepin:latest"
                       volumes:
+                        - name: candlepin-conf
+                          configMap:
+                            name: candlepin-conf
                         - secret:
                               items:
                                 - path: candlepin-ca.key

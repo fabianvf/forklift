@@ -16,9 +16,6 @@
           metadata:
               name: client-rpm
               namespace: "{{ project_name }}"
-              labels:
-                  app: foreman
-                  service: client-rpm
           spec:
               template:
                   metadata:

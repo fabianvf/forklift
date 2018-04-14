@@ -279,6 +279,8 @@
                           app: foreman
                           service: mongodb
                   spec:
+                      serviceAccount: anyuid
+                      serviceAccountName: anyuid
                       containers:
                         - name: mongodb
                           securityContext: {}

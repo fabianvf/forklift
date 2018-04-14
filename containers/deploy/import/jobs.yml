@@ -12,16 +12,17 @@
   - mongodb
   - puppet
   - postgres
+  - pub
 
 - name: Create data import jobs
   k8s_v1_job:
     state: "{{ deployment_state }}"
-    namespace: "{{ project_name }}"
     resource_definition:
       apiVersion: batch/v1
       kind: Job
       metadata:
         name: "{{ item.name }}-import"
+        namespace: "{{ project_name }}"
       spec:
         template:
           metadata:
@@ -38,7 +39,7 @@
                 value: "{{ import_source_host }}"
               - name: SOURCE_USER
                 value: "{{ import_source_user }}"
-              image: docker.io/bdunne/data-sync:latest
+              image: docker.io/ehelms/data-sync:latest
               volumeMounts:
               - name: ssh-private-key
                 mountPath: "/root/.ssh"
@@ -48,15 +49,19 @@
             - name: ssh-private-key
               secret:
                 secretName: data-import
+                items:
+                  - path: id_rsa
+                    key: idRsa
             - name: "{{ item.name }}-data"
               persistentVolumeClaim:
                 claimName: "{{ item.name }}-data"
             restartPolicy: Never
   with_items:
+  - {name: 'postgres', source: '/var/lib/pgsql/data'}
   - {name: 'pulp',     source: '/var/lib/pulp'}
   - {name: 'mongodb',  source: '/var/lib/mongodb'}
   - {name: 'puppet',   source: '/etc/puppetlabs/code/environments'}
-  - {name: 'postgres', source: '/var/lib/pgsql/data'}
+  - {name: 'pub',      source: '/var/www/html/pub'}
 
 - name: Check job state
   k8s_v1_job:
@@ -67,8 +72,9 @@
   with_items:
   - pulp
   - mongodb
-  - puppet
   - postgres
+  - puppet
+  - pub
   until: job["job"]["status"]["succeeded"] == 1
   delay: 30
   retries: 480

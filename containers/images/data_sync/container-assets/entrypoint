@@ -3,5 +3,17 @@
 cp /root/.ssh/id_rsa /root/id_rsa
 chmod 600 /root/id_rsa
 rsync -lrvh --progress --delete -e "ssh -i /root/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" $SOURCE_USER@$SOURCE_HOST:$SOURCE_DIRECTORY/ /pv/
-chown -R :root /pv/*
-chmod -R g+rw /pv/*
+
+if [[ $SOURCE_DIRECTORY = *"pgsql"* ]]; then
+  echo "listen_addresses = '*'" >> /pv/postgresql.conf
+cat <<-EOF > /pv/pg_hba.conf
+	$(echo host         all         all         0.0.0.0/0         md5)
+	$(cat /pv/pg_hba.conf)
+EOF
+  useradd postgres --uid 1000
+  chown -R postgres:root /pv
+	chmod 700 /pv
+else
+  chown -R :root /pv/*
+  #chmod -R g+rw /pv/*
+fi

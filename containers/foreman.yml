@@ -37,6 +37,11 @@
       tags:
         - always
 
+    - debug:
+        msg: "{{ data_import }}"
+      tags:
+        - always
+
     - import_tasks: deploy/project.yml
 
     - import_tasks: deploy/secrets/secrets.yml
@@ -46,6 +51,7 @@
         - start
 
     - import_tasks: deploy/foreman/config-maps.yml
+    - import_tasks: deploy/candlepin/config-maps.yml
 
     - import_tasks: deploy/service_accounts.yml
 
